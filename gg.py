@@ -42,9 +42,9 @@
 import sys
 import argparse
 import datetime
+import re
 
 from information.help import get_help
-from termcolor import colored
 
 parser   = argparse.ArgumentParser() #создаём образ парсера
 parser.add_argument('-c', '--color', action="store_true") # добавляем необязательный аргумент
@@ -157,38 +157,31 @@ def first(): # первый метод поиска
 	ask_first() # запускаем функцию
 
 def second(): # второй метод поиска
-	def find_all_with_parametr(val): # функция вывода всех совпадающих значение
-		count = 0 # создаём переменную счёта
-
-		for i in range(len(array)): # циклом пробегаемся по массиву столько раз, какова длина массива
-			if val in array[i]: # если введенное значение имеется в строке массива
-				print(f"\033[{color_set(i)}m{str(i) + ') ' + array[i].replace(';', ', ').capitalize()}\033[0m") # вывести строку и заменить все точки с запятой на запятый
+	val = input("Введите параметр: ")
+	count = 0
+	for an in animals:
+		if (val in an['name']) or (val in an['type']) or (val in an['diseases']) or (val in an['vaccination']) or (val in an['arrival_date']):
+			regex_result = re.search(r"[а-яА-Я0-9.]", val)
+			if regex_result:
+				print(f"\033[{color_set(animals.index(an))}m" + 
+					an['name'] + ", ", an['type'] + ", ", an['diseases'] + ", ", an['vaccination'] + ", ", an['arrival_date'] +
+					"\033[0m")
 				count += 1
-
-		print("Всего насчитано " + str(count) + " больных с такими показателями")
-		ask_second() # вызываем функцию снова
-
-	def ask_second():
-		val = str(input("Введите значение, по которому хотите найти больных: ")) # принимаем значение от пользователя
-		if (val in animals['name']) or (val in types) or (val in diseases) or (val in vaccination) or (val in arrival_date): # проверка на то, есть ли данное значение в массивах
-			if val.lower()[0] in "абвгдеёжзийклмнопрстуфхцчшщъыьэюя1234567890.": # если запрос не содержит лишние символы
-				find_all_with_parametr(val) # тогда вызываем функцию
-			else: 
-				print("Введённые вами данные не существуют!\n") # Выдаём сообщение об ошибке
-				find_all_with_parametr(val) # заново вызываем функцию
-		elif val.lower() in positive_vaccination:
-			find_all_with_parametr("Да")
-		elif val.lower() in negative_vaccination:
-			find_all_with_parametr("Нет")
-		elif val.lower() == "стоп":
-			sys.exit()
+			else:
+				print("Введён неверный тип данных!")
+				second()
 		elif val.lower() == "методы":
 			choice()
-		else: # если значения в массиве нет
-			print("Извините, введённое вами значение не найдено ни в одном списке\nВыберите другое значение") # выдаём сообщение об ошибке
-			ask_second() # заново вызываем функцию
+		elif val.lower() == "стоп":
+			sys.exit()
+		else:
+			pass
+	if count != 0:
+		print(f"Всего {count} больных с таким показателем")
+	else:
+		print("Больных с такими параметрами нет в базе данных!")
+	second()
 
-	ask_second() # запуск
 
 def third():
 	def check_with_two_parametrs(first_arg, second_arg):

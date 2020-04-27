@@ -1,7 +1,7 @@
 import datetime
 
 database = open("database.txt", "r")
-array    = [i for i in database.readlines()]
+array = [i for i in database.readlines()]
 animals  = []
 
 positive_vaccination = ["имеют прививку", "с прививкой", # здесь я создаю массив для слов, вариаций которых может быть множество
@@ -32,12 +32,11 @@ def insert():
 				pass
 		except ValueError: # Если нашли неверный дни в феврале
 			exceptions.append(_)
-		
 
-insert()
 
 if __name__ == "__main__":
-	val = input("Значение >>> ")
-	for i in range(len(animals)):
-		if val in animals[i]['name']:
-			print(animals[i])
+	insert()
+	val = input("Введите значени>>> ")
+	for an in animals:
+		if val in an['name']:
+			print(an)
