@@ -41,12 +41,11 @@
 '''
 import sys
 import argparse
+import datetime
 
 from information.help import get_help
-from datetime import datetime
 from termcolor import colored
 
-time_now = datetime.now() # записываем, сколько сейчас времени
 color    = False
 parser   = argparse.ArgumentParser() #создаём образ парсера
 parser.add_argument('-c', '--color', action="store_true") # добавляем необязательный аргумент
@@ -60,8 +59,8 @@ elif args.get_help == True:
 
 print("Идёт сканирование базы данных, это может занять некоторое время")
 
-database = open("database.txt", "r") # здесь мы открываем файл с параметром чтения
-array    = [i for i in database.readlines()] # записываю генератор для записи всего из файла базы данных в массив
+database = open("database.txt", "r")
+array    = [i for i in database.readlines()]
 
 names        = [] # здесь я создаю массив для имен
 types        = [] # здесь я создаю массив для типа
@@ -79,28 +78,26 @@ negative_vaccination = ["без прививки", "не имеют привив
 variations_diseases  = ["симптом", "болезнь", "диагноз"]
 
 def insert():
-	for db in range(len(array)): # с помощью цикла, который повториться ровно столько раз, какова длина массива
-		find_name         = array[db].find(";") # записываю в переменную индекс того места, до которого нам нужно брать информацию
-		find_type         = array[db].find(";", find_name + 1) # записываю в переменную индекс того места, до которого нам нужно брать информацию и прибавляю один для того, что бы не брать точку с запятой
-		find_diseases     = array[db].find(";", find_type + 1) # записываю в переменную индекс того места, до которого нам нужно брать информацию и прибавляю один для того, что бы не брать точку с запятой
-		find_vaccination  = array[db].find(";", find_diseases + 1)#записываю в переменную индекс того места,до которого нам нужно брать информацию и прибавляю один для того, что бы не брать точку с запятой
-		find_day          = array[db].find(".") # записываю в переменную индекс точки, которая разделяет дату поступления на дни, месяца и года. Берём первую точку
-		find_month        = array[db].rfind(".") # записываю в переменную индекс точки, которая разделяет дату поступления на дни, месяца и года. Берём вторую точку
-
-		names.append(array[db][:find_name]) # добавляю в массив имен имена
-		types.append(array[db][find_name + 1:find_type]) # добляю в массив типа тип
-		diseases.append(array[db][find_type + 1:find_diseases]) # добавляю в массив симптома симптом
-		vaccination.append(array[db][find_diseases + 1:find_vaccination]) # добавляю в массив вакцинирования вакцинирован ли
-
+	for _ in range(len(array)):
+		animals_inform = array[_].split(";")
+		day, month, year = array[_][array[_].rfind(";") + 1:-1].split(".")	
+		time_now = datetime.datetime.now()
 		try: # ищем февральские дни
-			data = datetime(int(array[db][find_month + 1:-1]), int(array[db][find_day + 1:find_month]), int(array[db][find_vaccination + 1:find_day])) # в переменную дата записываем дату больного
+			data = datetime.datetime(int(year), int(month), int(day)) # в переменную дата записываем дату больного
 			if data <= time_now: # если дата действительная
-				arrival_date.append(array[db][find_vaccination + 1:-1]) # добавляю в массив даты поступления дату поступления
+				names.append(animals_inform[0])
+				types.append(animals_inform[1])
+				diseases.append(animals_inform[2])
+				vaccination.append(animals_inform[3])
+				arrival_date.append(animals_inform[4].strip())
 			elif data > time_now: # если дата недействительная
-				exceptions.append(db) # добавляем индекс в массив с исключениями
+				exceptions.append(_) # добавляем индекс в массив с исключениями
+				print(array[_])
 		except ValueError: # Если нашли неверный дни в феврале
-			exceptions.append(db) # добавляем индекс в массив с исключениями
+			exceptions.append(_) # добавляем индекс в массив с исключениями
+			print(array[_])
 
+insert()
 
 def color_set(index): # функция определения цвета
 		if args.color == True:
@@ -282,28 +279,4 @@ def choice(): # функция выбора методов поиска
 		choice() # заново вызываем функцию
 
 insert()# запуск программы, входная точка
-
-new_database = open("new_database.txt", "w") # открываем открываем файл новой базы данных на ЗАПИСЬ
-counter = len(array)
-names        = [] # здесь я обнуляю массив для имен, для того, что бы заполнить файл новыми значениями
-types        = [] # здесь я обнуляю массив для типа, для того, что бы заполнить файл новыми значениями
-diseases     = [] # здесь я обнуляю массив для симптома, для того, что бы заполнить файл новыми значениями
-vaccination  = [] # здесь я обнуляю массив для вакцинирования, для того, что бы заполнить файл новыми значениями
-arrival_date = [] # здесь я обнуляю массив для даты поступления, для того, что бы заполнить файл новыми значениями
-
-for new in range(counter):
-	if new in exceptions: # проверяем нет ли индекса в списке с исключениями
-		pass # если есть, то просто игнорируем его
-	else: # если его нет в списке с исключениями
-		base_data = array[new] # создаём переменную
-		new_database.write(base_data) # записываем в файл
-
-new_database.close() # закрываем новую базу данных
-new_database = open("new_database.txt", "r") # открываем новую базу данных на ЧТЕНИЕ
-
-array = [n for n in new_database.readlines()] # переназначаем список на новую базу данных
-new_database.close() # закрываем новую базу данных
-database.close() # закрываем базу данных
-
-insert() # функция заполнения списков
 choice() # функция выбора методов поиска
