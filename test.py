@@ -1,31 +1,41 @@
 import datetime
 
-array = ['Джеси;единорог;бешенство;Нет;23.9.2015', 'Шарик;собака;падение с высоты;Нет;28.4.2020',
-		'Михалыч;единорог;падение с высоты;Да;25.11.2019',
-		'Михалыч;попугай;пьянство;Да;4.5.2020', 'Михалыч;сосед снизу;пьянство;Нет;2.1.2015']
+database = open("database.txt", "r")
+array = [i for i in database.readlines()]
 
 names        = [] # здесь я создаю массив для имен
 types        = [] # здесь я создаю массив для типа
 diseases     = [] # здесь я создаю массив для симптома
 vaccination  = [] # здесь я создаю массив для вакцинирования
 arrival_date = [] # здесь я создаю массив для даты поступления
-exceptions   = []
+exceptions   = [] # здесь я создаю массив для исключений. Тут будут находится индексы тех больных, дата которых недействительная
 
-time_now = datetime.date.today() # получаем время сейчас
-time_now = time_now.strftime("%d.%m.%Y").replace("/", ".").strip() # меняем местами год и день и убираем пробелы
+positive_vaccination = ["имеют прививку", "с прививкой", # здесь я создаю массив для слов, вариаций которых может быть множество
+						"вакцинированы", "наличие прививки", "прививка"]
 
-for _ in array:
-	animals_inform = _.split(";")
-	if animals_inform[4].strip() <= time_now:
-		names.append(animals_inform[0])
-		types.append(animals_inform[1])
-		diseases.append(animals_inform[2])
-		vaccination.append(animals_inform[3])
-		arrival_date.append(animals_inform[4].strip())
-		print(_)
-	else:
-		exceptions.append(array.index(_))
+negative_vaccination = ["без прививки", "не имеют прививки", # здесь я создаю массив для слов, вариаций которых может быть множество
+						"не вакцинированы"]
 
-# if __name__ == "__main__":
-# 	for i in array:
-# 		print(i)
+variations_diseases  = ["симптом", "болезнь", "диагноз"]
+
+def insert():
+	for _ in range(len(array)):
+		animals_inform = array[_].split(";")
+		day, month, year = array[_][array[_].rfind(";") + 1:-1].split(".")	
+		time_now = datetime.datetime.now()
+		try: # ищем февральские дни
+			data = datetime.datetime(int(year), int(month), int(day)) # в переменную дата записываем дату больного
+			if data <= time_now: # если дата действительная
+				names.append(animals_inform[0])
+				types.append(animals_inform[1])
+				diseases.append(animals_inform[2])
+				vaccination.append(animals_inform[3])
+				arrival_date.append(animals_inform[4].strip())
+			elif data > time_now: # если дата недействительная
+				exceptions.append(_) # добавляем индекс в массив с исключениями
+				print(array[_])
+		except ValueError: # Если нашли неверный дни в феврале
+			exceptions.append(_) # добавляем индекс в массив с исключениями
+			print(array[_])
+
+insert()
