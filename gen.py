@@ -26,18 +26,16 @@ ILLS = 	[
 			'бешенство', 'укусы', 'падение с высоты', 'пьянство'
 		]
 
-for m in range(10):
-	DATA_VOLUME = 9280
-	print('Start the generator.')
-	with open(FILE, 'a') as filee:
-		for i in range(DATA_VOLUME):
-			_name = random.choice(NAMES)
-			_type = random.choice(TYPES)
-			_ill = random.choice(ILLS)
-			_vactin = random.choice(['Да', 'Нет'])
-			_data = str(random.randint(1, 30)) + '.' + str(random.randint(1, 12)) + '.' + str(random.randint(2015, 2020))
-			result = ';'.join((_name, _type, _ill, _vactin, _data))
-			filee.write(result + '\n')
-	print('Success!')
-	i += i
-	print(i)
+DATA_VOLUME = 9280
+print('Start the generator.')
+with open(FILE, 'a') as filee:
+	for i in range(DATA_VOLUME):
+		_name = random.choice(NAMES)
+		_type = random.choice(TYPES)
+		_ill = random.choice(ILLS)
+		_vactin = random.choice(['Да', 'Нет'])
+		_data = str(random.randint(1, 30)) + '.' + str(random.randint(1, 12)) + '.' + str(random.randint(2015, 2020))
+		result = ';'.join((_name, _type, _ill, _vactin, _data))
+		filee.write(result + '\n')
+print('Success!')
+print(i)
