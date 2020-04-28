@@ -2,26 +2,10 @@
 Данная программа анализирует ТЕКСТОВУЮ базу данных с больными
 Больные имеют пять параметров:
 имя, класс, симптом, наличие прививки и дата поступления
-Просто гусь
-+-------------------------------------------------+
-|						░░░░░▄▀▀▀▄░░░░░░░░░		  |
-|						▄███▀░◐░░░▌░░░░░░░		  |
-|						░░░░▌░░░░░▐░░░░░░░		  |
-|						░░░░▐░░░░░▐░░░░░░░		  |
-|						░░░░▌░░░░░▐▄▄░░░░░		  |
-|						░░░░▌░░░░▄▀▒▒▀▀▀▀▄		  |
-|						░░░▐░░░░▐▒▒▒▒▒▒▒▒▀▀▄	  |
-|						░░░▐░░░░▐▄▒▒▒▒▒▒▒▒▒▒▀▄	  |
-|						░░░░▀▄░░░░▀▄▒▒▒▒▒▒▒▒▒▒▀▄  |
-|						░░░░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀ |
-|						░░░░░░░░░░░▌▌░▌▌░░░░░	  |
-|						░░░░░░░░░░░▌▌░▌▌░░░░░	  |
-|						░░░░░░░░░▄▄▌▌▄▌▌░░░░░	  |
-+-------------------------------------------------+
 
 Выполненные бонусы:
-—При запуске с аргументом -color заболевшие с прививкой выводятся зелёным цветом, без прививки — красным
-—В самом начале программы создаётся новая база данных, с только ДЕЙСТВИТЕЛЬНЫМИ датами. Программа работает с новой базой данных
+—При запуске с аргументом --color заболевшие с прививкой выводятся зелёным цветом, без прививки — красным
+—Запуск с аргументом --help выводит информационное письмо
 
 Добавлено:
 —Отключение и включение расцветки в меню
@@ -31,12 +15,11 @@
 —Коментарии	                                                                   <<<ИСПРАВЛЕНО>>>
 —Добавить help. ОБЯЗАТЕЛЬНО!                                                   <<<ИСПРАВЛЕНО>>>
 —Исправить olor                                                                <<<ИСПРАВЛЕНО>>>
-—Убрать тестовый файл при заливе...
-—Переделать под словарь(картинка dictionary_for_animals.png)
+—Убрать тестовый файл при заливе...                                            <<<ИСПРАВЛЕНО>>>
+—Переделать под словарь                                                        <<<ИСПРАВЛЕНО>>>
 —Сделать метод split(";")                                                      <<<ИСПРАВЛЕНО>>>
 —Исправить действительность дат                                                <<<ИСПРАВЛЕНО>>>
 —Поменять termcolor на Escape выражение '/033[32mТЕКСТЕКСТЕКСТ[0m' для цвета   <<<ИСПРАВЛЕНО>>>
-—
 
 '''
 import sys
@@ -157,85 +140,85 @@ def first(): # первый метод поиска
 	ask_first() # запускаем функцию
 
 def second(): # второй метод поиска
-	val = input("Введите параметр: ")
-	count = 0
-	for an in animals:
-		if (val in an['name']) or (val in an['type']) or (val in an['diseases']) or (val in an['vaccination']) or (val in an['arrival_date']):
-			regex_result = re.search(r"[а-яА-Я0-9.]", val)
-			if regex_result:
+	def print_value(parametr):
+		count = 0
+		val = parametr
+		for an in animals: # проходим по списку
+			if ((val in an['name']) or (val in an['type']) or (val in an['diseases']) or (val in an['vaccination']) or (val in an['arrival_date'])): # проверка на то, есть ли значение в списке
 				print(f"\033[{color_set(animals.index(an))}m" + 
-					an['name'] + ", ", an['type'] + ", ", an['diseases'] + ", ", an['vaccination'] + ", ", an['arrival_date'] +
+					an['name'] + ", ", an['type'] + ", ", an['diseases'] + ", ", an['vaccination'] + ", ", an['arrival_date'] + # вывод с расцветкой
 					"\033[0m")
 				count += 1
-			else:
-				print("Введён неверный тип данных!")
-				second()
-		elif val.lower() == "методы":
-			choice()
-		elif val.lower() == "стоп":
-			sys.exit()
-		else:
-			pass
-	if count != 0:
-		print(f"Всего {count} больных с таким показателем")
-	else:
-		print("Больных с такими параметрами нет в базе данных!")
-	second()
+			elif val.lower() == "методы": # смена метода поиска
+				choice()
+			elif val.lower() == "стоп": # остановка программы
+				sys.exit()
+			else: 
+				print("Такого значения нет в базе данных")
+				ask_second()
 
+		ask_second()
+
+	def ask_second():
+		val = input("Введите параметр: ")
+		count = 0
+		regex_result = re.search(r"[а-яА-Я0-9.]", val)
+		if regex_result:
+			if val.lower() in positive_vaccination: # упрощаем синтаксис запроса
+				print_value("Да")
+			elif val.lower() in negative_vaccination: # упрощаем синтаксис запроса
+				print_value("Нет")
+			elif val.lower() not in positive_vaccination and val not in negative_vaccination: # упрощаем синтаксис запроса
+				print_value(val)
+		else:
+			print("Вы ввели неверный тип данных!")
+			ask_second()
+
+	ask_second()
 
 def third():
 	def check_with_two_parametrs(first_arg, second_arg):
 		count = 0
-		for c in array:
-			if first_arg in c and second_arg in c:
-				print(f'\033[{color_set(array.index(c))}m{c.replace(";", ", ")}\033[0m')
-				count += 1
-
-		print("Всего насчитано " + str(count) + " больных с такими показателями")
-		ask_third()
+		for an in animals: # проходим по списку
+			if (first_arg in an['name']) or (first_arg in an['type']) or (first_arg in an['diseases']) or (first_arg in an['vaccination']) or (first_arg in an['arrival_date']):
+				if ((second_arg in an['name']) or (second_arg in an['type']) or (second_arg in an['diseases']) or (second_arg in an['vaccination']) or (second_arg in an['arrival_date'])):
+					print(f"\033[{color_set(animals.index(an))}m" + 
+						an['name'] + ", ", an['type'] + ", ", an['diseases'] + ", ", an['vaccination'] + ", ", an['arrival_date'] + # вывод с расцветкой
+						"\033[0m")
+					count += 1
+		if count == 0:
+			print("В базе данных нет больных с такими параметрами")
+			ask_third()
+		else:
+			print("Всего насчитано " + str(count) + " больных с такими показателями")
+			ask_third()
 
 	def ask_third():
 		val = str(input("Введите значение, по которому хотите найти больных: ")) # принимаем значение от пользователя
 		separator = val.find(",") # задаём переменной разделитель
-		space = separator + 1 # задаём переменной значение разделителя плюс один, что бы не брать в учёт запятую
+		space = separator + 2 # задаём переменной значение разделителя плюс один, что бы не брать в учёт запятую
+		first_arg, second_arg = val[:separator], val[space:] # тут в действие идёт магия питона
+		if first_arg == second_arg:
+			print("Для поиска одного значения используйте первую функцию")
 
 		if val[separator + 1] == " ": # если после запятой стоит пробел
 			space = separator + 2 # мы задаём перменной значение разделителя плюс два, что бы не брать запятую с пробелом
 
-		first_arg, second_arg = val[:separator], val[space:] # тут в действие идёт магия питона
-		if (first_arg in names) or (first_arg in types) or (first_arg in diseases) or (first_arg in vaccination) or (first_arg in arrival_date): # проверка на то, есть ли первое значение в массивах
-			if (second_arg in names) or (second_arg in types) or (second_arg in diseases) or (second_arg in vaccination) or (second_arg in arrival_date): # проверка на то, есть ли первое значение в массивах
-				if val.lower()[0] in "абвгдеёжзийклмнопрстуфхцчшщъыьэюя1234567890.": # если запрос не содержит лишние символы
-					check_with_two_parametrs(first_arg, second_arg) # тогда вызываем функцию
-				elif first_arg == "" or second_arg == "": # если один из один из параметров пойска был пустой
-					print("Вы обязательно должны ввести оба значения") # выводим сообщение об ошибке
-					ask_third() # заново вызываем функцию вопросы
-				else: 
-					print("Введённые вами данные не существуют!\n") # Выдаём сообщение об ошибке
-					ask_third() # заново вызываем функцию
-
-			elif second_arg.lower() in positive_vaccination: # тут мы облегчаем синтаксис
-				check_with_two_parametrs(first_arg, "Да") # тут мы облегчаем синтаксис 
-			elif second_arg.lower() in negative_vaccination:# тут мы облегчаем синтаксис 
-				check_with_two_parametrs(first_arg, "Нет")# тут мы облегчаем синтаксис 
-			else:  
-				print("Второе введённое значение не найдено!\nВыберите другое значение") # выводим сообщение об ошибке
-				ask_third() # вызываем функцию выбора снова
-
-		elif first_arg == "" or second_arg == "": # если один из аргументов пустой 
-			print("Вы обязательно должны ввести оба значения") # выводим сообщение об ошибке
-			ask_third() # вызываем функцию выбора снова
-		elif first_arg.lower() in positive_vaccination: # тут мы облегчаем синтаксис
-			check_with_two_parametrs("Да", second_arg) # тут мы облегчаем синтаксис
-		elif first_arg.lower() in negative_vaccination: # тут мы облегчаем синтаксис
-			check_with_two_parametrs("Нет", second_arg) # тут мы облегчаем синтаксис
-		elif val.lower() == "стоп": # проверяем на остановку программы
-			sys.exit() # завершаем программу
-		elif val.lower() == "методы": # проверяем на смену метода поиска
-			choice() # вызываем функцию поиска
-		else: # если значения в массиве нет
-			print("Первое введённое значение не найдено\nВыберите другое значение") # выдаём сообщение об ошибке
-			ask_third() # заново вызываем функцию
+		if val.lower() == "методы": # смена метода поиска
+			choice()
+		elif val.lower() == "стоп": # остановка программы
+			sys.exit()
+		else:
+			if first_arg.lower() in positive_vaccination: # упрощаем синтаксис запроса
+				check_with_two_parametrs("Да", second_arg)
+			elif first_arg.lower() in negative_vaccination: # упрощаем синтаксис запроса
+				check_with_two_parametrs("Нет", second_arg)
+			elif second_arg.lower() in positive_vaccination: # упрощаем синтаксис запроса
+				check_with_two_parametrs(first_arg, "Да")
+			elif second_arg.lower() in negative_vaccination: # упрощаем синтаксис запроса
+				check_with_two_parametrs(first_arg, "Нет")
+			else:
+				check_with_two_parametrs(first_arg, second_arg)
 
 	ask_third()
 
