@@ -36,7 +36,19 @@ def insert():
 
 if __name__ == "__main__":
 	insert()
-	val = input("Введите значени>>> ")
-	for an in animals:
-		if val in an['name']:
-			print(an)
+	val = str(input("Введите значение, по которому хотите найти больных: ")) # принимаем значение от пользователя
+	separator = val.find(",") # задаём переменной разделитель
+	space = separator + 2 # задаём переменной значение разделителя плюс один, что бы не брать в учёт запятую
+	first_arg, second_arg = val[:separator], val[space:] # тут в действие идёт магия питона
+
+	print(second_arg)
+
+	if val[separator + 1] == " ": # если после запятой стоит пробел
+		space = separator + 2 # мы задаём перменной значение разделителя плюс два, что бы не брать запятую с пробелом
+
+	for an in animals: # проходим по списку
+		if (first_arg in an['name']) or (first_arg in an['type']) or (first_arg in an['diseases']) or (first_arg in an['vaccination']) or (first_arg in an['arrival_date']):
+			if ((second_arg in an['name']) or (second_arg in an['type']) or (second_arg in an['diseases']) or (second_arg in an['vaccination']) or (second_arg in an['arrival_date'])):
+			# print(f"\033[{color_set(animals.index(an))}m" + 
+				print(an['name'] + ", ", an['type'] + ", ", an['diseases'] + ", ", an['vaccination'] + ", ", an['arrival_date'])# + # вывод с расцветкой
+			# "\033[0m")
